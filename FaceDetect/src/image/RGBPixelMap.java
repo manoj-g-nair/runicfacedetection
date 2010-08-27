@@ -157,17 +157,27 @@ public class RGBPixelMap
 		try {
 			FileOutputStream fos = new FileOutputStream("testimagergb.png");
 			InputStream in = RGBPixelMap.class.getResourceAsStream("/resources/cat_grande.jpg");
+//			InputStream in = RGBPixelMap.class.getResourceAsStream("/resources/cat.jpg");
+//			InputStream in = RGBPixelMap.class.getResourceAsStream("/resources/imagem.jpg");
 			RGBPixelMap rgbPM = new RGBPixelMap(in);
 			GreyPixelMap gpmR = rgbPM.createGrayPixelMap(RED);
 			GreyPixelMap gpmG = rgbPM.createGrayPixelMap(GREEN);
 			GreyPixelMap gpmB = rgbPM.createGrayPixelMap(BLUE);
 			
 			GreyPixelMap newGpmR = PixelMapProcessor.binarizePixMap(gpmR);
+			FileOutputStream redfos = new FileOutputStream("testimagered.png");
+			newGpmR.pixMapToImage(redfos);
 			GreyPixelMap newGpmG = PixelMapProcessor.binarizePixMap(gpmG);
+			FileOutputStream greenfos = new FileOutputStream("testimagegreen.png");
+			newGpmG.pixMapToImage(greenfos);
 			GreyPixelMap newGpmB = PixelMapProcessor.binarizePixMap(gpmB);
+			FileOutputStream bluefos = new FileOutputStream("testimageblue.png");
+			newGpmB.pixMapToImage(bluefos);
 			
 			rgbPM.mergeGrayPixelMaps(newGpmR, newGpmG, newGpmB);
 			rgbPM.pixMapToImage(fos);
+			
+			
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
