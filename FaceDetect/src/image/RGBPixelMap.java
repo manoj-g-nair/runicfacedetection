@@ -109,12 +109,17 @@ public class RGBPixelMap
 	public GreyPixelMap createGrayPixelMap(int color)
 	{
 		GreyPixelMap gpm = new GreyPixelMap(getWidth(), getHeight());
-		int dim = color >= RED || color <= BLUE ? color : RED;
+		int dim = color >= RED || color <= BLUE ? color : -1;
+		int value = 0;
 		for(int i = 0; i < gpm.getWidth(); i++)
 		{
 			for(int j = 0; j < gpm.getHeight(); j++)
 			{
-				int value = this.pixMap[i][j][dim];
+				if(dim == -1)
+					value = this.pixMap[i][j][0] + 
+						this.pixMap[i][j][1] + this.pixMap[i][j][2]; 
+				else
+					value = this.pixMap[i][j][dim];
 				gpm.setPixel(i, j, value);
 			}
 		}
@@ -163,21 +168,37 @@ public class RGBPixelMap
 			GreyPixelMap gpmR = rgbPM.createGrayPixelMap(RED);
 			GreyPixelMap gpmG = rgbPM.createGrayPixelMap(GREEN);
 			GreyPixelMap gpmB = rgbPM.createGrayPixelMap(BLUE);
+			GreyPixelMap gpmGray = rgbPM.createGrayPixelMap(-1);
 			
-			GreyPixelMap newGpmR = PixelMapProcessor.binarizePixMap(gpmR);
+//			GreyPixelMap newGpmR = PixelMapProcessor.binarizePixMap(gpmR);
+//			GreyPixelMap newGpmG = PixelMapProcessor.binarizePixMap(gpmG);
+//			GreyPixelMap newGpmB = PixelMapProcessor.binarizePixMap(gpmB);
+			
+			GreyPixelMap newGpmR = PixelMapProcessor.negativePixMap(gpmR);
+			GreyPixelMap newGpmG = PixelMapProcessor.negativePixMap(gpmG);
+			GreyPixelMap newGpmB = PixelMapProcessor.negativePixMap(gpmB);
+			GreyPixelMap newGpmGray = PixelMapProcessor.negativePixMap(gpmGray);
+			
 			FileOutputStream redfos = new FileOutputStream("testimagered.png");
 			newGpmR.pixMapToImage(redfos);
-			GreyPixelMap newGpmG = PixelMapProcessor.binarizePixMap(gpmG);
+			
 			FileOutputStream greenfos = new FileOutputStream("testimagegreen.png");
 			newGpmG.pixMapToImage(greenfos);
-			GreyPixelMap newGpmB = PixelMapProcessor.binarizePixMap(gpmB);
+			
 			FileOutputStream bluefos = new FileOutputStream("testimageblue.png");
 			newGpmB.pixMapToImage(bluefos);
+			
+			FileOutputStream grayfos = new FileOutputStream("testimagegray.png");
+			newGpmGray.pixMapToImage(grayfos);
 			
 			rgbPM.mergeGrayPixelMaps(newGpmR, newGpmG, newGpmB);
 			rgbPM.pixMapToImage(fos);
 			
-			
+			redfos.close();
+			greenfos.close();
+			bluefos.close();
+			grayfos.close();
+			fos.close();
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
