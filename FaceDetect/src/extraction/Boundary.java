@@ -12,7 +12,7 @@ public class Boundary {
 	private static int windowHeight;
 
 	static {
-		window = new int[][] { { 255, 255, 255, 255, 255 }, { 255, 255, 255, 255, 255 }, { 255, 255, 255, 255, 255 } };
+		window = new int[][] { { 255, 255, 255}, { 255, 255, 255 }, { 255, 255, 255 } };
 
 		windowWidth = window.length;
 		windowHeight = window[0].length;
