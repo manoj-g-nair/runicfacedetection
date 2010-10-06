@@ -1,4 +1,4 @@
-package processing;
+package extraction;
 
 import image.GrayPixelMap;
 
@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import extraction.Histogram;
 
 public class EqualizedHistogram extends Histogram 
 {
