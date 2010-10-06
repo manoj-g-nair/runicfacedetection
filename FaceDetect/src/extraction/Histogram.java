@@ -1,4 +1,6 @@
-package image;
+package extraction;
+
+import image.GrayPixelMap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,17 +8,19 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
+import processing.Otsu;
+
 public class Histogram 
 {
-	private int greyFreqMap[];
+	protected int greyFreqMap[];
 	
-	public Histogram(GreyPixelMap pixMap)
+	public Histogram(GrayPixelMap pixMap)
 	{
 		greyFreqMap = new int[256];
 		loadHistogram(pixMap);
 	}
 	
-	public void loadHistogram(GreyPixelMap pixMap)
+	public void loadHistogram(GrayPixelMap pixMap)
 	{
 		Arrays.fill(greyFreqMap, 0);
 		int width = pixMap.getWidth();
@@ -25,7 +29,7 @@ public class Histogram
 		{
 			for(int j = 0; j < height; j++)
 			{
-				int pixel = pixMap.getPixel(i, j);
+				int pixel = pixMap.getPixel(i, j)[0];
 				greyFreqMap[pixel]++;
 			}
 		}
@@ -56,11 +60,11 @@ public class Histogram
 	 
 	public static void main(String args[])
 	{
-		InputStream in = GreyPixelMap.class.getResourceAsStream("/resources/cat.jpeg");
-		GreyPixelMap pixMap = null;
+		InputStream in = GrayPixelMap.class.getResourceAsStream("/resources/cat.jpeg");
+		GrayPixelMap pixMap = null;
 		try 
 		{
-			pixMap = new GreyPixelMap(in);
+			pixMap = new GrayPixelMap(in);
 			Histogram hist = new Histogram(pixMap);
 			hist.printHistogram(System.out);
 			int threshold = Otsu.findThreshold(hist);

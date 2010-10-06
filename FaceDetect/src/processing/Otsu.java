@@ -1,4 +1,6 @@
-package image;
+package processing;
+
+import extraction.Histogram;
 
 public class Otsu 
 {	

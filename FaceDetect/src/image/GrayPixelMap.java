@@ -13,26 +13,28 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.FileCacheImageInputStream;
 import javax.imageio.stream.ImageInputStream;
 
-public class GreyPixelMap 
+import processing.PixelMapProcessor;
+
+public class GrayPixelMap extends PixelMap
 {
-	private int pixMap[][];
 	
 //	public GreyPixelMap()
 //	{
 //		pixMap = null;
 //	}
 	
-	public GreyPixelMap( int width, int height )
+	public GrayPixelMap( int width, int height )
 	{
-		pixMap = new int[width][height];
+		super(width, height, 1);
 	}
 	
-	public GreyPixelMap( InputStream in ) throws IOException
+	public GrayPixelMap( InputStream in ) throws IOException
 	{
-		loadPixMap(in);
+		super(1, 1, 1);
+		loadPixelMap(in);
 	}
 	
-	public void loadPixMap( InputStream in ) throws IOException
+	public void loadPixelMap( InputStream in ) throws IOException
 	{
 		ImageInputStream imgInput = null;
 		
@@ -43,7 +45,7 @@ public class GreyPixelMap
 			Raster raster = bufImage.getRaster();
 			int width = raster.getWidth();
 			int height = raster.getHeight();
-			this.pixMap = new int[width][height];
+			this.pixMap = new int[width][height][3];
 			int pixel[] = new int[3];
 			for(int i = 0; i < width; i++)
 			{
@@ -53,11 +55,14 @@ public class GreyPixelMap
 					pixel[1] = 0;
 					pixel[2] = 0;
 					raster.getPixel(i, j, pixel);
-					this.pixMap[i][j] = (pixel[0] + pixel[1] + pixel[2])/3;
+					double p0 = pixel[0];
+					double p1 = pixel[1];
+					double p3 = pixel[2];
+					this.pixMap[i][j][0] =(int) (p0*0.3 + p1*0.59 + 0.11*p3);
 					//this.pixMap[i][j] = pixel[0];
 				}
 			}
-			int debugHelper = 10;
+//			int debugHelper = 10;
 		} 
 		catch (IOException e) 
 		{
@@ -66,27 +71,8 @@ public class GreyPixelMap
 		
 	}
 	
-	public int getPixel(int coordX, int coordY)
-	{
-		return this.pixMap[coordX][coordY];
-	}
 	
-	public void setPixel(int coordX, int coordY, int value)
-	{
-		this.pixMap[coordX][coordY] = value;
-	}
-	
-	public int getHeight()
-	{
-		return this.pixMap[0].length;
-	}
-	
-	public int getWidth()
-	{
-		return this.pixMap.length;
-	}
-	
-	public void printPixMap(OutputStream out)
+	public void printPixelMap(OutputStream out)
 	{
 		PrintWriter printer = new PrintWriter(out);
 		for(int i = 0; i < this.pixMap.length; i++)
@@ -101,19 +87,18 @@ public class GreyPixelMap
 		printer.close();
 	}
 	
-	public void pixMapToImage(OutputStream out) throws IOException
+	public void pixelMapToImage(OutputStream out) throws IOException
 	{
 		int width = getWidth();
 		int height = getHeight();
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
 		WritableRaster raster = image.getRaster();
-		double[] pixel = new double[3];
+//		double[] pixel = new double[3];
 		for(int i = 0; i < width; i++)
 		{
 			for(int j = 0; j < height; j++)
 			{
-				pixel[0] = getPixel(i, j);
-				raster.setPixel(i, j, pixel);
+				raster.setPixel(i, j, getPixel(i,j));
 			}
 		}
 		ImageIO.write(image, "PNG", out);
@@ -121,7 +106,8 @@ public class GreyPixelMap
 	
 	public static void main(String args[])
 	{
-		InputStream in = GreyPixelMap.class.getResourceAsStream("/resources/cat_grande.jpg");
+		InputStream in = GrayPixelMap.class.getResourceAsStream("/resources/cat_grande.jpg");
+//		InputStream in = GrayPixelMap.class.getResourceAsStream("/resources/cat.jpg");
 		FileOutputStream fos = null;
 //		InputStream in = null;
 //		try {
@@ -129,17 +115,17 @@ public class GreyPixelMap
 //		} catch (FileNotFoundException e1) {
 //			e1.printStackTrace();
 //		}
-		GreyPixelMap pixMap = null;
+		GrayPixelMap pixMap = null;
 		
 		try 
 		{
 			fos = new FileOutputStream("imagemteste.png");
-			pixMap = new GreyPixelMap(in);
+			pixMap = new GrayPixelMap(in);
 //			pixMap.printPixMap(System.out);
 //			pixMap.pixMapToImage(fos);
 			
-			GreyPixelMap newPixMap =  PixelMapProcessor.binarizePixMap(pixMap);
-			newPixMap.pixMapToImage(fos);
+			GrayPixelMap newPixMap =  PixelMapProcessor.binarizePixMap(pixMap);
+			newPixMap.pixelMapToImage(fos);
 //			newPixMap.printPixMap(System.out);
 			
 		} catch (IOException e) {
@@ -157,5 +143,11 @@ public class GreyPixelMap
 		}
 		
 		
+	}
+
+	@Override
+	public int getLuminance(int coordX, int coordY) 
+	{
+		return this.pixMap[coordX][ coordY][0];
 	}
 }
