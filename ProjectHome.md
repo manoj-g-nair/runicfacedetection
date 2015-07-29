@@ -1,0 +1,1 @@
+API for face detection and recognition. Written in Java, using AWT for image manipulation.
